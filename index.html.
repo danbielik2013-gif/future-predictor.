@@ -127,7 +127,7 @@
       "🧭 Trying something new could lead you in an exciting direction.",
       "🌻 A little patience may bring a welcome result.",
       "🔮 Your future is full of possibilities — keep making choices that feel right for you."
-    ];
+    ]; 🔮 You are soon going to be so clumsy 🤣
 
     let previousIndex = -1;
     let revealCount = 0;
