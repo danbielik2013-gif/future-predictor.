@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10091f">
+  <title>Future Predictor 🔮</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #10091f;
+      --panel: rgba(31, 19, 58, .82);
+      --purple: #9b6cff;
+      --lavender: #e0caff;
+      --text: #fbf7ff;
+      --muted: #c7b8df;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow-x: hidden;
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at 50% 10%, rgba(111, 52, 180, .34), transparent 45%),
+        radial-gradient(ellipse at 85% 85%, rgba(74, 42, 130, .25), transparent 38%),
+        var(--bg);
+    }
+    .stars, .stars::before, .stars::after {
+      position: fixed; inset: 0; pointer-events: none;
+      background-image:
+        radial-gradient(2px 2px at 12% 20%, #fff 45%, transparent 55%),
+        radial-gradient(1px 1px at 75% 14%, #d7b8ff 45%, transparent 55%),
+        radial-gradient(2px 2px at 83% 62%, #fff 45%, transparent 55%),
+        radial-gradient(1px 1px at 28% 78%, #d7b8ff 45%, transparent 55%),
+        radial-gradient(1px 1px at 60% 88%, #fff 45%, transparent 55%),
+        radial-gradient(2px 2px at 44% 35%, #c5a2ff 45%, transparent 55%);
+      opacity: .75;
+    }
+    .stars::before, .stars::after { content: ""; transform: translate(30px, 20px); opacity: .4; }
+    .stars::after { transform: translate(-25px, -15px); opacity: .3; }
+    .card {
+      position: relative;
+      width: min(100%, 620px);
+      text-align: center;
+      padding: clamp(24px, 6vw, 48px);
+      border: 1px solid rgba(204, 169, 255, .28);
+      border-radius: 28px;
+      background: linear-gradient(145deg, rgba(39, 24, 68, .92), rgba(20, 12, 38, .94));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .4), 0 0 50px rgba(142, 82, 224, .12);
+      backdrop-filter: blur(12px);
+    }
+    .orb {
+      width: 112px; height: 112px; margin: 0 auto 18px;
+      display: grid; place-items: center; font-size: 66px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, #e4d2ff, #9860eb 35%, #34205f 72%);
+      box-shadow: inset -8px -12px 22px rgba(9, 3, 22, .45), 0 0 35px rgba(166, 111, 255, .35);
+      animation: float 3.2s ease-in-out infinite;
+    }
+    h1 { margin: 0; font-size: clamp(2rem, 7vw, 3.2rem); letter-spacing: .02em; }
+    .subtitle { color: var(--muted); margin: 12px 0 28px; line-height: 1.6; }
+    button {
+      border: 0; border-radius: 14px; padding: 15px 24px; width: 100%;
+      max-width: 320px; color: white; font-size: 1rem; font-weight: 750;
+      letter-spacing: .02em; cursor: pointer;
+      background: linear-gradient(100deg, #7c3aed, #a855f7, #8b5cf6);
+      box-shadow: 0 8px 24px rgba(139, 92, 246, .3);
+      transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+    }
+    button:hover { transform: translateY(-2px); filter: brightness(1.12); box-shadow: 0 12px 30px rgba(139, 92, 246, .42); }
+    button:active { transform: translateY(0); }
+    button:focus-visible { outline: 3px solid #eadcff; outline-offset: 4px; }
+    .result {
+      min-height: 132px; margin-top: 28px; padding: 22px 18px;
+      display: flex; flex-direction: column; justify-content: center; gap: 10px;
+      border-radius: 18px; border: 1px solid rgba(193, 154, 255, .22);
+      background: rgba(13, 7, 28, .48);
+    }
+    .result-label { color: #caa9ff; font-size: .78rem; letter-spacing: .18em; font-weight: 800; }
+    #prediction { font-size: clamp(1.05rem, 3.6vw, 1.35rem); line-height: 1.55; }
+    #counter { color: #a998c4; font-size: .8rem; }
+    .reveal { animation: reveal .55s ease both; }
+    .note { color: #9f90b8; font-size: .78rem; line-height: 1.5; margin: 22px 0 0; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes reveal { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <main class="card">
+    <div class="orb" aria-hidden="true">🔮</div>
+    <h1>Future Predictor</h1>
+    <p class="subtitle">A little mystery, a little magic.<br>Discover what the future <em>might</em> hold.</p>
+    <button id="revealButton" type="button">✨ Reveal My Future</button>
+    <section class="result" aria-live="polite" aria-atomic="true">
+      <div class="result-label">YOUR PREDICTION</div>
+      <div id="prediction">Your future awaits…</div>
+      <div id="counter">Ready when you are ✦</div>
+    </section>
+    <p class="note">Just for fun — these are playful possibilities, not guaranteed predictions.</p>
+  </main>
+  <script>
+    const predictions = [
+      "✨ A pleasant surprise may brighten your day soon.",
+      "🍀 A lucky moment could be closer than you think.",
+      "👫 A friendship may grow stronger through a small act of kindness.",
+      "🎁 An unexpected surprise might be waiting around the corner.",
+      "⭐ You may achieve something that makes you proud.",
+      "😊 Someone could make you smile when you least expect it.",
+      "🌈 A new opportunity may appear when you stay curious.",
+      "🌙 A quiet moment could help you discover a new idea.",
+      "💫 Something you have been practising may start to feel easier.",
+      "🗝️ You might find the answer to a question that has been on your mind.",
+      "🎉 A fun memory could be made in the coming days.",
+      "📚 You may learn something interesting from an unexpected place.",
+      "🦋 A small change could lead to a refreshing new experience.",
+      "💌 A kind message or thoughtful gesture may lift your mood.",
+      "🌟 Your creativity could help you solve a tricky problem.",
+      "☀️ A challenging day may turn out better than you expected.",
+      "🎨 You may discover a hobby or idea you really enjoy.",
+      "🧭 Trying something new could lead you in an exciting direction.",
+      "🌻 A little patience may bring a welcome result.",
+      "🔮 Your future is full of possibilities — keep making choices that feel right for you."
+    ];
+
+    let previousIndex = -1;
+    let revealCount = 0;
+    const button = document.getElementById("revealButton");
+    const prediction = document.getElementById("prediction");
+    const counter = document.getElementById("counter");
+
+    button.addEventListener("click", () => {
+      let index;
+      do {
+        index = Math.floor(Math.random() * predictions.length);
+      } while (predictions.length > 1 && index === previousIndex);
+
+      previousIndex = index;
+      revealCount++;
+      prediction.classList.remove("reveal");
+      // Restart the CSS animation on every click.
+      void prediction.offsetWidth;
+      prediction.textContent = predictions[index];
+      prediction.classList.add("reveal");
+      counter.textContent = `Prediction ${index + 1} of ${predictions.length} · Reveal #${revealCount}`;
+    });
+  </script>
+</body>
+</html>
